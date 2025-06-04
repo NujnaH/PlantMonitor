@@ -1,0 +1,23 @@
+{
+  "extends": [
+    "react-app",
+    "react-app/jest"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "semi": ["error", "never"],
+    "@typescript-eslint/semi": ["error", "never"],
+    "@typescript-eslint/promise-function-async": ["error", {
+      "checkArrowFunctions": true,
+      "checkFunctionDeclarations": true,
+      "checkFunctionExpressions": true,
+      "checkMethodDeclarations": true
+    }],
+    "@typescript-eslint/await-thenable": "error"
+  }
+} 

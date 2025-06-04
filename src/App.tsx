@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
-import './App.css';
-import { JSX } from 'react/jsx-runtime';
-import { Plant as PlantType } from './api/plantsApi';
-import { useAppDispatch, useAppSelector } from './store/hooks';
-import { fetchPlants, addPlant, deletePlant, describePlant } from './store/plantsSlice';
+import React, { useEffect } from 'react'
+import { useState } from 'react'
+import './App.css'
+import { JSX } from 'react/jsx-runtime'
+import { Plant as PlantType } from './api/plantsApi'
+import { useAppDispatch, useAppSelector } from './store/hooks'
+import { fetchPlants, addPlant, deletePlant, describePlant } from './store/plantsSlice'
 
 interface SearchBarProps {
   value: string;
@@ -21,22 +21,22 @@ function SearchBar({ value, onSearch }: SearchBarProps) {
         onChange={(e) => onSearch(e.target.value)}
       />
     </div>
-  );
+  )
 }
 
 function AddPlantForm({ onAdd }: { onAdd: (plant: Omit<PlantType, 'id'>) => void }) {
-  const [type, setType] = useState('');
-  const [wateringPeriod, setWateringPeriod] = useState('7');
+  const [type, setType] = useState('')
+  const [wateringPeriod, setWateringPeriod] = useState('7')
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     onAdd({
       type,
       wateringPeriod: parseInt(wateringPeriod, 10)
-    });
-    setType('');
-    setWateringPeriod('7');
-  };
+    })
+    setType('')
+    setWateringPeriod('7')
+  }
 
   return (
     <form onSubmit={handleSubmit} className="add-plant-form">
@@ -57,42 +57,42 @@ function AddPlantForm({ onAdd }: { onAdd: (plant: Omit<PlantType, 'id'>) => void
       />
       <button type="submit">Add Plant</button>
     </form>
-  );
+  )
 }
 
 function Plants() {
-  const [searchText, setSearchText] = useState('');
-  const dispatch = useAppDispatch();
+  const [searchText, setSearchText] = useState('')
+  const dispatch = useAppDispatch()
   const { 
     items: plants, 
     loading, 
     error, 
     descriptions, 
     describingPlant 
-  } = useAppSelector(state => state.plants);
+  } = useAppSelector(state => state.plants)
 
   useEffect(() => {
-    dispatch(fetchPlants());
-  }, [dispatch]);
+    dispatch(fetchPlants())
+  }, [dispatch])
 
   const handleAddPlant = (newPlant: Omit<PlantType, 'id'>) => {
-    dispatch(addPlant(newPlant));
-  };
+    dispatch(addPlant(newPlant))
+  }
 
   const handleDeletePlant = (id: string) => {
-    dispatch(deletePlant(id));
-  };
+    dispatch(deletePlant(id))
+  }
 
   const handleDescribePlant = (id: string) => {
-    dispatch(describePlant(id));
-  };
+    dispatch(describePlant(id))
+  }
 
   const filteredPlants = plants.filter(plant => 
     plant.type.toLowerCase().includes(searchText.toLowerCase())
-  );
+  )
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>Error: {error}</div>
 
   return (
     <div>
@@ -106,7 +106,7 @@ function Plants() {
         describingPlant={describingPlant}
       />
     </div>
-  );
+  )
 }
 
 function PlantTable({ 
@@ -131,7 +131,7 @@ function PlantTable({
       description={descriptions[plant.id]}
       isDescribing={describingPlant === plant.id}
     />
-  ));
+  ))
 
   return (
     <table>
@@ -147,7 +147,7 @@ function PlantTable({
         {rows}
       </tbody>
     </table>
-  );
+  )
 }
 
 function Plant({ 
@@ -184,7 +184,7 @@ function Plant({
         </button>
       </td>
     </tr>
-  );
+  )
 }
 
 const App: React.FC = () => {
@@ -195,7 +195,7 @@ const App: React.FC = () => {
         <Plants />
       </header>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App

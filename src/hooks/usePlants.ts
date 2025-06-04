@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Plant, plantsApi } from '../api/plantsApi';
+import { useState, useEffect } from 'react'
+import { Plant, plantsApi } from '../api/plantsApi'
 
 interface UsePlantsState {
   plants: Plant[];
@@ -12,47 +12,47 @@ export const usePlants = () => {
     plants: [],
     loading: false,
     error: null,
-  });
+  })
 
   const fetchPlants = async () => {
-    setState(prev => ({ ...prev, loading: true }));
+    setState(prev => ({ ...prev, loading: true }))
     try {
-      const response = await plantsApi.getPlants();
+      const response = await plantsApi.getPlants()
       setState({
         plants: response.data,
         loading: false,
         error: null,
-      });
+      })
     } catch (error) {
       setState({
         plants: [],
         loading: false,
         error: error as Error,
-      });
+      })
     }
-  };
+  }
 
   const addPlant = async (plant: Plant) => {
-    setState(prev => ({ ...prev, loading: true }));
+    setState(prev => ({ ...prev, loading: true }))
     try {
-      await plantsApi.addPlant(plant);
-      fetchPlants(); // Refresh the list
+      await plantsApi.addPlant(plant)
+      fetchPlants() // Refresh the list
     } catch (error) {
       setState(prev => ({
         ...prev,
         loading: false,
         error: error as Error,
-      }));
+      }))
     }
-  };
+  }
 
   useEffect(() => {
-    fetchPlants();
-  }, []);
+    fetchPlants()
+  }, [])
 
   return {
     ...state,
     addPlant,
     refreshPlants: fetchPlants,
-  };
-}; 
+  }
+} 
