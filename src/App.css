@@ -45,11 +45,47 @@ code {
   color: #6b7280;
 }
 
+.add-plant-form {
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.add-plant-form input {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: 2px solid #3d4451;
+  border-radius: 4px;
+  background-color: #1e2127;
+  color: white;
+}
+
+.add-plant-form input:focus {
+  outline: none;
+  border-color: #61dafb;
+}
+
+.add-plant-form button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #61dafb;
+  color: #282c34;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-plant-form button:hover {
+  background-color: #4fa8d5;
+}
+
 /* Add some styling for the table as well */
 table {
   border-collapse: collapse;
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   margin: 20px auto;
   background-color: #1e2127;
   border-radius: 8px;
@@ -69,4 +105,34 @@ th {
 
 tr:hover {
   background-color: #2c313c;
+}
+
+.delete-button {
+  padding: 6px 12px;
+  font-size: 12px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+.describe-button {
+  padding: 6px 12px;
+  font-size: 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.describe-button:hover {
+  background-color: #218838;
 } 
