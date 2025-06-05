@@ -1,5 +1,9 @@
 import OpenAI from 'openai'
-const client = new OpenAI()
+
+const client = new OpenAI({
+  apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true 
+})
 
 // Define types
 export interface Plant {
@@ -48,13 +52,12 @@ export const plantsApi = {
     const plant = MOCK_PLANTS.find(p => p.id === id)
     if (!plant) return Promise.reject(new Error('Plant not found'))
     
-    // const response =await client.responses.create({
-    //   model: "gpt-4.1",
-    //   input: `Write a one-sentence bedtime story about ${plant.type}.`,
-    // }, {
-    //   maxRetries: 1,
-    // });
-    return 'wtf'
-    // return response.output_text;
+    const response =await client.responses.create({
+      model: "gpt-4.1",
+      input: `how many days should you wait before watering ${plant.type} indoors? give me just the number`
+    }, {
+      maxRetries: 1,
+    })
+    return response.output_text
   },
 } 
