@@ -4,7 +4,7 @@ import './App.css'
 import { JSX } from 'react/jsx-runtime'
 import { Plant as PlantType } from './api/plantsApi'
 import { useAppDispatch, useAppSelector } from './store/hooks'
-import { fetchPlants, addPlant, deletePlant, describePlant } from './store/plantsSlice'
+import { fetchPlants, addPlant, deletePlant, updateWateringPeriod } from './store/plantsSlice'
 
 interface SearchBarProps {
   value: string;
@@ -67,8 +67,8 @@ function Plants() {
     items: plants, 
     loading, 
     error, 
-    descriptions, 
-    describingPlant 
+    wateringDays, 
+    updatingWateringPeriod 
   } = useAppSelector(state => state.plants)
 
   useEffect(() => {
@@ -83,8 +83,8 @@ function Plants() {
     dispatch(deletePlant(id))
   }
 
-  const handleDescribePlant = (id: string) => {
-    dispatch(describePlant(id))
+  const handleUpdateWateringPeriod = (id: string) => {
+    dispatch(updateWateringPeriod(id))
   }
 
   const filteredPlants = plants.filter(plant => 
@@ -101,9 +101,9 @@ function Plants() {
       <PlantTable 
         plants={filteredPlants} 
         onDelete={handleDeletePlant}
-        onDescribe={handleDescribePlant}
-        descriptions={descriptions}
-        describingPlant={describingPlant}
+        onUpdateWatering={handleUpdateWateringPeriod}
+        wateringDays={wateringDays}
+        updatingWateringPeriod={updatingWateringPeriod}
       />
     </div>
   )
@@ -112,24 +112,24 @@ function Plants() {
 function PlantTable({ 
   plants, 
   onDelete, 
-  onDescribe,
-  descriptions,
-  describingPlant
+  onUpdateWatering,
+  wateringDays,
+  updatingWateringPeriod
 }: { 
   plants: PlantType[]
   onDelete: (id: string) => void
-  onDescribe: (id: string) => void
-  descriptions: Record<string, string>
-  describingPlant: string | null
+  onUpdateWatering: (id: string) => void
+  wateringDays: Record<string, number>
+  updatingWateringPeriod: string | null
 }) {
   const rows: JSX.Element[] = plants.map((plant) => (
     <Plant 
       key={plant.id} 
       plant={plant} 
       onDelete={onDelete}
-      onDescribe={onDescribe}
-      description={descriptions[plant.id]}
-      isDescribing={describingPlant === plant.id}
+      onUpdateWatering={onUpdateWatering}
+      suggestedWateringDays={wateringDays[plant.id]}
+      isUpdating={updatingWateringPeriod === plant.id}
     />
   ))
 
@@ -138,8 +138,8 @@ function PlantTable({
       <thead>
         <tr>
           <th>Type</th>
-          <th>Watering period</th>
-          <th>Description</th>
+          <th>Current Watering Period</th>
+          <th>Suggested Watering Period</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -153,28 +153,28 @@ function PlantTable({
 function Plant({ 
   plant, 
   onDelete, 
-  onDescribe,
-  description,
-  isDescribing
+  onUpdateWatering,
+  suggestedWateringDays,
+  isUpdating
 }: { 
   plant: PlantType
   onDelete: (id: string) => void
-  onDescribe: (id: string) => void
-  description?: string
-  isDescribing: boolean
+  onUpdateWatering: (id: string) => void
+  suggestedWateringDays?: number
+  isUpdating: boolean
 }) {
   return (
     <tr>
       <td>{plant.type}</td>
       <td>{plant.wateringPeriod} days</td>
       <td>
-        {isDescribing ? (
-          <span>Generating description...</span>
-        ) : description ? (
-          <span>{description}</span>
+        {isUpdating ? (
+          <span>Updating...</span>
+        ) : suggestedWateringDays ? (
+          <span>{suggestedWateringDays} days</span>
         ) : (
-          <button onClick={() => onDescribe(plant.id)} className="describe-button">
-            Get Description
+          <button onClick={() => onUpdateWatering(plant.id)} className="update-button">
+            Get Suggestion
           </button>
         )}
       </td>

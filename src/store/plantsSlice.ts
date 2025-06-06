@@ -5,16 +5,16 @@ interface PlantsState {
   items: Plant[];
   loading: boolean;
   error: string | null;
-  descriptions: Record<string, string>;
-  describingPlant: string | null;
+  wateringDays: Record<string, number>;
+  updatingWateringPeriod: string | null;
 }
 
 const initialState: PlantsState = {
   items: [],
   loading: false,
   error: null,
-  descriptions: {},
-  describingPlant: null,
+  wateringDays: {},
+  updatingWateringPeriod: null,
 }
 
 // Async thunks
@@ -26,11 +26,11 @@ export const fetchPlants = createAsyncThunk(
   }
 )
 
-export const describePlant = createAsyncThunk(
-  'plants/describePlant',
+export const updateWateringPeriod = createAsyncThunk(
+  'plants/updateWateringPeriod',
   async (id: string) => {
     const response = await plantsApi.describePlant(id)
-    return { id, description: response }
+    return { id, days: parseInt(response, 10) || 7 }
   }
 )
 
@@ -47,7 +47,7 @@ const plantsSlice = createSlice({
     },
     deletePlant: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(plant => plant.id !== action.payload)
-      delete state.descriptions[action.payload]
+      delete state.wateringDays[action.payload]
     },
   },
   extraReducers: (builder) => {
@@ -65,17 +65,22 @@ const plantsSlice = createSlice({
         state.loading = false
         state.error = action.error.message || 'Failed to fetch plants'
       })
-      // Describe plant
-      .addCase(describePlant.pending, (state, action) => {
-        state.describingPlant = action.meta.arg
+      // Update watering period
+      .addCase(updateWateringPeriod.pending, (state, action) => {
+        state.updatingWateringPeriod = action.meta.arg
       })
-      .addCase(describePlant.fulfilled, (state, action) => {
-        state.describingPlant = null
-        state.descriptions[action.payload.id] = action.payload.description
+      .addCase(updateWateringPeriod.fulfilled, (state, action) => {
+        state.updatingWateringPeriod = null
+        state.wateringDays[action.payload.id] = action.payload.days
+        // Update the plant's watering period
+        const plant = state.items.find(p => p.id === action.payload.id)
+        if (plant) {
+          plant.wateringPeriod = action.payload.days
+        }
       })
-      .addCase(describePlant.rejected, (state, action) => {
-        state.describingPlant = null
-        state.error = action.error.message || 'Failed to get plant description'
+      .addCase(updateWateringPeriod.rejected, (state, action) => {
+        state.updatingWateringPeriod = null
+        state.error = action.error.message || 'Failed to update watering period'
       })
   },
 })

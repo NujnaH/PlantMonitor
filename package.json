@@ -46,5 +46,8 @@
     "postcss": ">=8.4.31",
     "@svgr/webpack": ">=6.0.0",
     "resolve-url-loader": ">=5.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14"
   }
 }
