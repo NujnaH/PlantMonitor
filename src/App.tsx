@@ -4,7 +4,7 @@ import './App.css'
 import { JSX } from 'react/jsx-runtime'
 import { Plant as PlantType } from './api/plantsApi'
 import { useAppDispatch, useAppSelector } from './store/hooks'
-import { fetchPlants, addPlant, deletePlant, updateWateringPeriod } from './store/plantsSlice'
+import { fetchPlants, addPlantAsync, deletePlant, updateWateringPeriod } from './store/plantsSlice'
 
 interface SearchBarProps {
   value: string;
@@ -68,7 +68,8 @@ function Plants() {
     loading, 
     error, 
     wateringDays, 
-    updatingWateringPeriod 
+    updatingWateringPeriod,
+    addingPlant 
   } = useAppSelector(state => state.plants)
 
   useEffect(() => {
@@ -76,7 +77,7 @@ function Plants() {
   }, [dispatch])
 
   const handleAddPlant = (newPlant: Omit<PlantType, 'id'>) => {
-    dispatch(addPlant(newPlant))
+    dispatch(addPlantAsync(newPlant))
   }
 
   const handleDeletePlant = (id: string) => {
@@ -91,7 +92,7 @@ function Plants() {
     plant.type.toLowerCase().includes(searchText.toLowerCase())
   )
 
-  if (loading) return <div>Loading...</div>
+  if (loading || addingPlant) return <div>Loading...</div>
   if (error) return <div>Error: {error}</div>
 
   return (

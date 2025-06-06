@@ -6,7 +6,8 @@ interface PlantsState {
   loading: boolean;
   error: string | null;
   wateringDays: Record<string, number>;
-  updatingWateringPeriod: string | null;
+  updatingWateringPeriod: null | string;
+  addingPlant: boolean;
 }
 
 const initialState: PlantsState = {
@@ -15,6 +16,7 @@ const initialState: PlantsState = {
   error: null,
   wateringDays: {},
   updatingWateringPeriod: null,
+  addingPlant: false,
 }
 
 // Async thunks
@@ -22,6 +24,14 @@ export const fetchPlants = createAsyncThunk(
   'plants/fetchPlants',
   async () => {
     const response = await plantsApi.getPlants()
+    return response.data
+  }
+)
+
+export const addPlantAsync = createAsyncThunk(
+  'plants/addPlant',
+  async (plant: Omit<Plant, 'id'>) => {
+    const response = await plantsApi.addPlant(plant)
     return response.data
   }
 )
@@ -38,13 +48,6 @@ const plantsSlice = createSlice({
   name: 'plants',
   initialState,
   reducers: {
-    addPlant: (state, action: PayloadAction<Omit<Plant, 'id'>>) => {
-      const newPlant = {
-        ...action.payload,
-        id: Math.random().toString(36).substr(2, 9),
-      }
-      state.items = [...state.items, newPlant]
-    },
     deletePlant: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(plant => plant.id !== action.payload)
       delete state.wateringDays[action.payload]
@@ -64,6 +67,19 @@ const plantsSlice = createSlice({
       .addCase(fetchPlants.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message || 'Failed to fetch plants'
+      })
+      // Add plant
+      .addCase(addPlantAsync.pending, (state) => {
+        state.addingPlant = true
+        state.error = null
+      })
+      .addCase(addPlantAsync.fulfilled, (state, action) => {
+        state.addingPlant = false
+        state.items = [...state.items, action.payload]
+      })
+      .addCase(addPlantAsync.rejected, (state, action) => {
+        state.addingPlant = false
+        state.error = action.error.message || 'Failed to add plant'
       })
       // Update watering period
       .addCase(updateWateringPeriod.pending, (state, action) => {
@@ -85,5 +101,5 @@ const plantsSlice = createSlice({
   },
 })
 
-export const { addPlant, deletePlant } = plantsSlice.actions
+export const { deletePlant } = plantsSlice.actions
 export default plantsSlice.reducer 

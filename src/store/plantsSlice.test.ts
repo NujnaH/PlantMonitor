@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals'
-import reducer, { addPlant } from './plantsSlice'
+import reducer, { addPlantAsync } from './plantsSlice'
 import { Plant } from '../api/plantsApi'
 
 describe('plants reducer', () => {
@@ -9,33 +9,46 @@ describe('plants reducer', () => {
     error: null,
     wateringDays: {},
     updatingWateringPeriod: null,
+    addingPlant: false,
   }
 
-  it('should handle adding a new plant', () => {
-    const newPlant: Omit<Plant, 'id'> = {
+  it('should handle addPlantAsync.pending', () => {
+    const action = { type: addPlantAsync.pending.type }
+    const nextState = reducer(initialState, action)
+
+    expect(nextState.addingPlant).toBe(true)
+    expect(nextState.error).toBeNull()
+  })
+
+  it('should handle addPlantAsync.fulfilled', () => {
+    const newPlant: Plant = {
+      id: '123',
       type: 'Monstera',
       wateringPeriod: 7,
     }
 
-    const nextState = reducer(initialState, addPlant(newPlant))
-
-    // Check that a new plant was added
-    expect(nextState.items).toHaveLength(1)
+    const action = { 
+      type: addPlantAsync.fulfilled.type, 
+      payload: newPlant 
+    }
     
-    // Verify the plant properties
-    const addedPlant = nextState.items[0]
-    expect(addedPlant).toEqual({
-      ...newPlant,
-      id: expect.any(String), // Since ID is randomly generated
-    })
+    const nextState = reducer(initialState, action)
 
-    // Verify the ID format (should be a 9-character string)
-    expect(addedPlant.id).toMatch(/^[a-z0-9]{9}$/)
+    expect(nextState.addingPlant).toBe(false)
+    expect(nextState.items).toHaveLength(1)
+    expect(nextState.items[0]).toEqual(newPlant)
+  })
 
-    // Verify that other state properties remain unchanged
-    expect(nextState.loading).toBe(false)
-    expect(nextState.error).toBeNull()
-    expect(nextState.wateringDays).toEqual({})
-    expect(nextState.updatingWateringPeriod).toBeNull()
+  it('should handle addPlantAsync.rejected', () => {
+    const error = 'Failed to add plant'
+    const action = { 
+      type: addPlantAsync.rejected.type,
+      error: { message: error }
+    }
+    
+    const nextState = reducer(initialState, action)
+
+    expect(nextState.addingPlant).toBe(false)
+    expect(nextState.error).toBe(error)
   })
 }) 
