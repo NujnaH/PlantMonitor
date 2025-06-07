@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { plantsApi, Plant } from '../api/plantsApi'
 
-interface PlantsState {
+export interface PlantsState {
   items: Plant[];
   loading: boolean;
   error: string | null;
@@ -55,19 +55,6 @@ const plantsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch plants
-      .addCase(fetchPlants.pending, (state) => {
-        state.loading = true
-        state.error = null
-      })
-      .addCase(fetchPlants.fulfilled, (state, action) => {
-        state.loading = false
-        state.items = action.payload
-      })
-      .addCase(fetchPlants.rejected, (state, action) => {
-        state.loading = false
-        state.error = action.error.message || 'Failed to fetch plants'
-      })
       // Add plant
       .addCase(addPlantAsync.pending, (state) => {
         state.addingPlant = true
@@ -80,6 +67,19 @@ const plantsSlice = createSlice({
       .addCase(addPlantAsync.rejected, (state, action) => {
         state.addingPlant = false
         state.error = action.error.message || 'Failed to add plant'
+      })
+      // Fetch plants
+      .addCase(fetchPlants.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(fetchPlants.fulfilled, (state, action) => {
+        state.loading = false
+        state.items = action.payload
+      })
+      .addCase(fetchPlants.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message || 'Failed to fetch plants'
       })
       // Update watering period
       .addCase(updateWateringPeriod.pending, (state, action) => {

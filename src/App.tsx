@@ -4,7 +4,8 @@ import './App.css'
 import { JSX } from 'react/jsx-runtime'
 import { Plant as PlantType } from './api/plantsApi'
 import { useAppDispatch, useAppSelector } from './store/hooks'
-import { fetchPlants, addPlantAsync, deletePlant, updateWateringPeriod } from './store/plantsSlice'
+import { fetchPlants, addPlantAsync, deletePlant, updateWateringPeriod, PlantsState } from './store/plantsSlice'
+import type { RootState } from './store/store'
 
 interface SearchBarProps {
   value: string;
@@ -68,9 +69,8 @@ function Plants() {
     loading, 
     error, 
     wateringDays, 
-    updatingWateringPeriod,
-    addingPlant 
-  } = useAppSelector(state => state.plants)
+    updatingWateringPeriod 
+  } = useAppSelector((state: RootState) => state.plants as PlantsState)
 
   useEffect(() => {
     dispatch(fetchPlants())
@@ -88,11 +88,11 @@ function Plants() {
     dispatch(updateWateringPeriod(id))
   }
 
-  const filteredPlants = plants.filter(plant => 
+  const filteredPlants = plants.filter((plant: PlantType) => 
     plant.type.toLowerCase().includes(searchText.toLowerCase())
   )
 
-  if (loading || addingPlant) return <div>Loading...</div>
+  if (loading) return <div>Loading...</div>
   if (error) return <div>Error: {error}</div>
 
   return (
